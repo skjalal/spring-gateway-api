@@ -1,0 +1,54 @@
+spring:
+  application:
+    name: spring-gateway-api
+  webflux:
+    base-path: /${spring.application.name}
+  cloud:
+    gateway:
+      routes:
+        - id: user-app
+          uri: https://jsonplaceholder.typicode.com
+          predicates:
+            - Path=/${spring.application.name}/users,/${spring.application.name}/users/**
+          filters:
+            - name: Authentication
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedHeaders:
+              - Content-Type
+              - Accept
+              - Authorization
+              - Cache-Control
+              - Keep-Alive
+              - Origin
+              - User-Agent
+              - Cookie
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+      metrics:
+        enabled: true
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+        - Retry=3,BAD_GATEWAY,GET,100ms,500ms,2,false
+info:
+  name: Spring Cloud Gateway Application
+  description: API Gateway to routes API endpoint URL.
+management:
+  info:
+    env:
+      enabled: true
+  endpoint:
+    gateway:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - info
+          - gateway
