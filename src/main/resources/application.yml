@@ -1,15 +1,19 @@
 spring:
   application:
     name: spring-gateway-api
-  webflux:
-    base-path: /${spring.application.name}
+  profiles:
+    active:
+      - dev
+  jackson:
+    deserialization:
+      READ_ENUMS_USING_TO_STRING: true
   cloud:
     gateway:
       routes:
         - id: user-app
-          uri: https://jsonplaceholder.typicode.com
+          uri: ${external-api}
           predicates:
-            - Path=/${spring.application.name}/users,/${spring.application.name}/users/**
+            - Path=/users,/users/**
           filters:
             - name: Authentication
       globalcors:
@@ -39,6 +43,11 @@ info:
   name: Spring Cloud Gateway Application
   description: API Gateway to routes API endpoint URL.
 management:
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
   info:
     env:
       enabled: true
